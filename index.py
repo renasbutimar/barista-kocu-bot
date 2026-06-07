@@ -100,6 +100,6 @@ def webhook():
     
     return "OK", 200
 
-# For local development
-if __name__ == "__main__":
-    app.run()
+# Entry point for Vercel
+# Vercel's Python runtime will look for an 'app' or 'application' variable in the file.
+# The 'app' variable is already defined above as the Flask instance.
