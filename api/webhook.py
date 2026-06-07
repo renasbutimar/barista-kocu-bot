@@ -68,35 +68,44 @@ async def handle_text(update, context):
         await update.message.reply_text("Ana Menü:", reply_markup=get_main_menu())
 
 TOKEN = '8640816185:AAH3vQsZl9TtNF5lFmZQJxHdxlV0-LPCa2w'
+
+# Setup application
 application = ApplicationBuilder().token(TOKEN).build()
 application.add_handler(CommandHandler('start', start))
 application.add_handler(CallbackQueryHandler(handle_callback))
 application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
 
+async def process_update(update_json):
+    # This context manager handles initialization and shutdown properly per request in serverless
+    async with application:
+        update = Update.de_json(update_json, application.bot)
+        await application.process_update(update)
+
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         content_length = int(self.headers.get('Content-Length', 0))
         body = self.rfile.read(content_length)
-        update_json = json.loads(body.decode('utf-8'))
-        
-        async def process():
-            async with application:
-                update = Update.de_json(update_json, application.bot)
-                await application.process_update(update)
         
         try:
+            update_json = json.loads(body.decode('utf-8'))
+            
+            # Create a new event loop for each request to avoid conflicts in serverless
             loop = asyncio.new_event_loop()
             asyncio.set_event_loop(loop)
-            loop.run_until_complete(process())
+            loop.run_until_complete(process_update(update_json))
+            loop.close()
+            
             self.send_response(200)
             self.end_headers()
+            self.wfile.write(b'OK')
         except Exception as e:
-            logger.error(f"Error: {e}")
+            logger.error(f"Error handling POST: {e}")
             self.send_response(500)
             self.end_headers()
+            self.wfile.write(str(e).encode())
 
     def do_GET(self):
         self.send_response(200)
-        self.send_header('Content-type', 'text/plain')
+        self.send_header('Content-type', 'text/plain; charset=utf-8')
         self.end_headers()
-        self.wfile.write("Barista Koçu is active!".encode())
+        self.wfile.write("Barista Koçu Bot is running!".encode())
