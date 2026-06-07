@@ -33,6 +33,7 @@ RECIPES = {
 USER_DATA = {}
 
 def get_user_state(user_id):
+    user_id = str(user_id)
     if user_id not in USER_DATA:
         USER_DATA[user_id] = {'lookups': 0, 'premium': False}
     return USER_DATA[user_id]
@@ -49,7 +50,7 @@ def get_main_menu():
 # --- TELEGRAM STARS PAYMENT ---
 async def send_stars_invoice(update, context):
     chat_id = update.effective_chat.id
-    title = "Sınırsız Tarif Paket"
+    title = "Sınırsız Tarif Paketi"
     description = "Limitleri kaldırın ve tüm barista sırlarına sınırsızca erişin! ☕✨"
     payload = "premium_upgrade"
     currency = "XTR"  # Telegram Stars
@@ -57,7 +58,13 @@ async def send_stars_invoice(update, context):
     prices = [LabeledPrice("Sınırsız Erişim", price)]
 
     await context.bot.send_invoice(
-        chat_id, title, description, payload, "", currency, prices
+        chat_id=chat_id,
+        title=title,
+        description=description,
+        payload=payload,
+        provider_token="",
+        currency=currency,
+        prices=prices
     )
 
 async def precheckout_callback(update, context):
@@ -84,7 +91,7 @@ async def handle_request(update, context, recipe_id):
     user_id = update.effective_user.id
     state = get_user_state(user_id)
     
-    if not state['premium'] and state['lookups'] >= 3:
+    if not state.get('premium', False) and state.get('lookups', 0) >= 3:
         await update.effective_message.reply_text(
             "🛑 Limit doldu! 3 ücretsiz tarif hakkınızı kullandınız.\nDevam etmek için Telegram Stars ile sınırsız erişim alabilirsiniz: :)",
         )
@@ -92,9 +99,9 @@ async def handle_request(update, context, recipe_id):
         return
 
     text = RECIPES.get(recipe_id, "Tarif bulunamadı.")
-    if not state['premium']:
-        state['lookups'] += 1
-        remaining = 3 - state['lookups']
+    if not state.get('premium', False):
+        state['lookups'] = state.get('lookups', 0) + 1
+        remaining = max(0, 3 - state['lookups'])
         counter_text = f"\n\n*(Ücretsiz hakkınız: {remaining}/3)*"
     else:
         counter_text = "\n\n✨ Sınırsız Erişim Aktif"
@@ -104,8 +111,32 @@ async def handle_request(update, context, recipe_id):
 async def handle_callback(update, context):
     query = update.callback_query
     await query.answer()
+    
     if query.data in RECIPES:
         await handle_request(update, context, query.data)
+    elif query.data == 'espresso_menu':
+        keyboard = [
+            [InlineKeyboardButton("Espresso", callback_data='espresso'), InlineKeyboardButton("Latte", callback_data='latte')],
+            [InlineKeyboardButton("Cortado", callback_data='cortado'), InlineKeyboardButton("Flat White", callback_data='flat_white')],
+            [InlineKeyboardButton("⬅️ Ana Menü", callback_data='menu')]
+        ]
+        await query.edit_message_text("Espresso'nun büyülü dünyası:", reply_markup=InlineKeyboardMarkup(keyboard))
+    elif query.data == 'brew_menu':
+        keyboard = [
+            [InlineKeyboardButton("V60", callback_data='v60'), InlineKeyboardButton("Chemex", callback_data='chemex')],
+            [InlineKeyboardButton("AeroPress", callback_data='aeropress'), InlineKeyboardButton("Cold Brew", callback_data='cold_brew')],
+            [InlineKeyboardButton("⬅️ Ana Menü", callback_data='menu')]
+        ]
+        await query.edit_message_text("Demleme yöntemleri:", reply_markup=InlineKeyboardMarkup(keyboard))
+    elif query.data == 'world_menu':
+        keyboard = [
+            [InlineKeyboardButton("Türk Kahvesi", callback_data='turkish'), InlineKeyboardButton("Vietnam Kahvesi", callback_data='vietnamese')],
+            [InlineKeyboardButton("Café de Olla", callback_data='de_olla'), InlineKeyboardButton("Irish Coffee", callback_data='irish')],
+            [InlineKeyboardButton("⬅️ Ana Menü", callback_data='menu')]
+        ]
+        await query.edit_message_text("Dünya kahveleri:", reply_markup=InlineKeyboardMarkup(keyboard))
+    elif query.data == 'menu':
+        await query.edit_message_text("Hangi demleme yöntemini seçiyoruz?", reply_markup=get_main_menu())
 
 TOKEN = '8640816185:AAH3vQsZl9TtNF5lFmZQJxHdxlV0-LPCa2w'
 telegram_app = ApplicationBuilder().token(TOKEN).build()
@@ -115,6 +146,31 @@ telegram_app.add_handler(PreCheckoutQueryHandler(precheckout_callback))
 telegram_app.add_handler(MessageHandler(filters.SUCCESSFUL_PAYMENT, successful_payment_callback))
 
 app = Flask(__name__)
+
+@app.route('/', methods=['GET'])
+def home():
+    return "Barista Koçu Bot is running!"
+
+@app.route('/api/webhook', methods=['POST', 'GET'])
+def webhook():
+    if request.method == 'GET': return "OK"
+    update_json = request.get_json()
+    
+    async def process():
+        try:
+            async with telegram_app:
+                update = Update.de_json(update_json, telegram_app.bot)
+                await telegram_app.process_update(update)
+        except Exception as e:
+            logger.error(f"Error processing update: {e}")
+
+    try:
+        asyncio.run(process())
+    except Exception as e:
+        logger.error(f"Error in asyncio run: {e}")
+        return "Error", 500
+    return "OK", 200
+
 application = app
 if __name__ == '__main__':
     app.run()
