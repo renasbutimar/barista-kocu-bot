@@ -88,18 +88,12 @@ def webhook():
     
     update_json = request.get_json()
     
-    # Process update asynchronously
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    try:
+    # Process update
+    async def process():
         async with telegram_app:
             update = Update.de_json(update_json, telegram_app.bot)
-            loop.run_until_complete(telegram_app.process_update(update))
-    finally:
-        loop.close()
+            await telegram_app.process_update(update)
+
+    asyncio.run(process())
     
     return "OK", 200
-
-# Vercel's Python runtime entry point
-def application(environ, start_response):
-    return app(environ, start_response)
