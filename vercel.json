@@ -2,14 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "barista_bot.py",
+      "src": "api/webhook.py",
       "use": "@vercel/python"
     }
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "barista_bot.py"
+      "src": "/api/webhook",
+      "dest": "api/webhook.py"
     }
   ]
 }
