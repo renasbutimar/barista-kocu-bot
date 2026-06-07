@@ -1,7 +1,7 @@
 import logging
 import json
 import asyncio
-from http.server import BaseHTTPRequestHandler
+from flask import Flask, request, jsonify
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, filters
 
@@ -75,37 +75,27 @@ application.add_handler(CommandHandler('start', start))
 application.add_handler(CallbackQueryHandler(handle_callback))
 application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
 
-async def process_update(update_json):
-    # This context manager handles initialization and shutdown properly per request in serverless
-    async with application:
-        update = Update.de_json(update_json, application.bot)
-        await application.process_update(update)
+app = Flask(__name__)
 
-class handler(BaseHTTPRequestHandler):
-    def do_POST(self):
-        content_length = int(self.headers.get('Content-Length', 0))
-        body = self.rfile.read(content_length)
-        
-        try:
-            update_json = json.loads(body.decode('utf-8'))
-            
-            # Create a new event loop for each request to avoid conflicts in serverless
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(process_update(update_json))
-            loop.close()
-            
-            self.send_response(200)
-            self.end_headers()
-            self.wfile.write(b'OK')
-        except Exception as e:
-            logger.error(f"Error handling POST: {e}")
-            self.send_response(500)
-            self.end_headers()
-            self.wfile.write(str(e).encode())
+@app.route('/api/webhook', methods=['POST', 'GET'])
+def webhook():
+    if request.method == 'GET':
+        return "Barista Koçu Bot is running!"
+    
+    update_json = request.get_json()
+    
+    # Process update asynchronously
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        async with application:
+            update = Update.de_json(update_json, application.bot)
+            loop.run_until_complete(application.process_update(update))
+    finally:
+        loop.close()
+    
+    return "OK", 200
 
-    def do_GET(self):
-        self.send_response(200)
-        self.send_header('Content-type', 'text/plain; charset=utf-8')
-        self.end_headers()
-        self.wfile.write("Barista Koçu Bot is running!".encode())
+# For local development
+if __name__ == "__main__":
+    app.run()
