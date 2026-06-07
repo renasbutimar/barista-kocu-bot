@@ -1,158 +1,102 @@
 import logging
-import os
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, CallbackQueryHandler, MessageHandler, filters
-from http.server import BaseHTTPRequestHandler
 import json
 import asyncio
+from http.server import BaseHTTPRequestHandler
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import ApplicationBuilder, CommandHandler, CallbackQueryHandler, MessageHandler, filters
 
-# Bot loglarını yapılandırıyoruz
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
+# Setup logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-# Kahve tarifleri
+# Recipes
 RECIPES = {
-    'v60': (
-        "☕ *Hario V60 Tarifi (Barista Standartı)*\n\n"
-        "Modern demlemenin zirvesi! İşte mükemmel asidite ve gövde dengesi için reçetemiz:\n\n"
-        "🔸 *Kahve:* 15g (Orta-İnce öğütüm)\n"
-        "🔸 *Su:* 250ml (92-94°C)\n"
-        "🔸 *Süre:* 2:30 - 3:00 dakika\n\n"
-        "1. *Blooming:* 30-45g su ile 30 saniye boyunca kahveyi uyandır.\n"
-        "2. *Birinci Döküş:* Süreyi 1:15'e kadar 150ml'ye tamamla.\n"
-        "3. *İkinci Döküş:* Kalan suyu nazik dairesel hareketlerle ekle.\n\n"
-        "✨ *İpucu:* Filtre kağıdını önceden sıcak suyla durulamayı unutma!"
-    ),
-    'chemex': (
-        "🧪 *Chemex Tarifi (Berrak ve Zarif)*\n\n"
-        "Laboratuvar şıklığında tertemiz bir fincan:\n\n"
-        "🔸 *Kahve:* 30g (Orta-Kalın öğütüm, deniz tuzu gibi)\n"
-        "🔸 *Su:* 500ml (94°C)\n"
-        "🔸 *Süre:* 3:30 - 4:30 dakika\n\n"
-        "1. *Blooming:* 60g su ile 45 saniye bekle.\n"
-        "2. *Döküş:* Suyu yavaşça merkeze yakın dökerek 500ml'ye ulaş.\n"
-        "3. *Bitiş:* Kahve yatağının düz olduğundan emin ol.\n\n"
-        "✨ *İpucu:* Chemex filtreleri kalındır, bu yüzden kahve çok daha parlak bir profil sunar."
-    ),
-    'aeropress': (
-        "🚀 *AeroPress Tarifi (Pratik ve Yoğun)*\n\n"
-        "Her yere taşınabilen bir efsane! (Ters Yöntem):\n\n"
-        "🔸 *Kahve:* 18g (İnce-Orta öğütüm)\n"
-        "🔸 *Su:* 200ml (85-88°C)\n"
-        "🔸 *Süre:* 2:00 dakika\n\n"
-        "1. *Hazırlık:* AeroPress'i ters çevir ve kahveyi ekle.\n"
-        "2. *Demleme:* Suyu ekle, 30 saniye bekledikten sonra 3-4 kez karıştır.\n"
-        "3. *Pres:* 1:30'da kapağı kapat ve yavaşça (30 sn) bardağa bastır.\n\n"
-        "✨ *İpucu:* Daha yoğun bir tat için espressoya yakın bir öğütüm deneyebilirsin."
-    ),
-    'espresso_menu': (
-        "☕ *Espresso Bazlı Kahveler*\n\n"
-        "Hangi kahvenin detaylarını öğrenmek istersin?"
-    ),
-    'espresso': (
-        "☕ *Espresso*\n\n"
-        "🔸 *Kahve:* 18-20g (İnce öğütüm)\n"
-        "🔸 *Çıktı:* 36-40g\n"
-        "🔸 *Süre:* 25-30 sn\n"
-        "🔸 *Sıcaklık:* 93°C\n\n"
-        "1. Portafiltreyi kurula ve kahveyi tartarak ekle.\n"
-        "2. Eşit şekilde dağıt ve düzgünce tamp yap.\n"
-        "3. Grupu akıtıp hemen demlemeyi başlat."
-    ),
-    'latte': (
-        "🥛 *Caffè Latte*\n\n"
-        "🔸 *Espresso:* 1 shot (veya double)\n"
-        "🔸 *Süt:* 200-250ml\n"
-        "🔸 *Doku:* İnce mikro-köpük (1cm)\n\n"
-        "1. Espressoyu hazırla.\n"
-        "2. Sütü 60-65°C'ye kadar ipeksi bir dokuyla buharla.\n"
-        "3. Sütü yavaşça dairesel hareketlerle espressoya ekle ve latte art ile bitir."
-    )
+    'v60': "☕ *Hario V60 Tarifi*\n\n15g kahve, 250ml su (92-94°C). 30g blooming (30sn), 1:15'e kadar 150ml, kalan suyu dairesel dök.",
+    'chemex': "🧪 *Chemex Tarifi*\n\n30g kahve, 500ml su (94°C). 60g blooming (45sn), yavaşça merkeze dökerek 500ml'ye tamamla.",
+    'aeropress': "🚀 *AeroPress Tarifi*\n\n18g kahve, 200ml su (85-88°C). Ters yöntem: Suyu ekle, 30sn bekle, 1:30'da presle.",
+    'espresso_menu': "☕ *Espresso Bazlı Kahveler*\n\nHangi içeceği hazırlıyoruz?",
+    'espresso': "☕ *Espresso*\n\n18-20g kahve, 36-40g çıktı. 25-30 saniye süre.",
+    'americano': "🥤 *Americano*\n\nDouble espresso + 150ml sıcak su.",
+    'latte': "🥛 *Latte*\n\nDouble espresso + 200ml ipeksi süt köpüğü.",
+    'cappuccino': "☁️ *Cappuccino*\n\nDouble espresso + 150ml yoğun süt köpüğü.",
+    'flat_white': "🥛 *Flat White*\n\nDouble espresso + 120ml çok ince süt köpüğü.",
+    'cortado': "🥃 *Cortado*\n\nDouble espresso + 60ml süt (1:1 oran).",
+    'iced_latte': "🧊 *Iced Latte*\n\nBuz + 180ml soğuk süt + Double espresso.",
+    'iced_americano': "🧊 *Iced Americano*\n\nBuz + 150ml soğuk su + Double espresso."
 }
 
-def get_main_keyboard():
+def get_main_menu():
     keyboard = [
         [InlineKeyboardButton("V60 ☕", callback_data='v60')],
         [InlineKeyboardButton("Chemex 🧪", callback_data='chemex')],
         [InlineKeyboardButton("AeroPress 🚀", callback_data='aeropress')],
-        [InlineKeyboardButton("Espresso Bazlı Kahveler ☕🥛", callback_data='espresso_menu')]
+        [InlineKeyboardButton("Espresso Bazlı ☕🥛", callback_data='espresso_menu')]
     ]
     return InlineKeyboardMarkup(keyboard)
 
-def get_espresso_keyboard():
+def get_espresso_menu():
     keyboard = [
-        [InlineKeyboardButton("Espresso", callback_data='espresso')],
-        [InlineKeyboardButton("Latte", callback_data='latte')],
-        [InlineKeyboardButton("⬅️ Ana Menüye Dön", callback_data='menu')]
+        [InlineKeyboardButton("Espresso", callback_data='espresso'), InlineKeyboardButton("Americano", callback_data='americano')],
+        [InlineKeyboardButton("Latte", callback_data='latte'), InlineKeyboardButton("Cappuccino", callback_data='cappuccino')],
+        [InlineKeyboardButton("Flat White", callback_data='flat_white'), InlineKeyboardButton("Cortado", callback_data='cortado')],
+        [InlineKeyboardButton("Iced Latte 🧊", callback_data='iced_latte'), InlineKeyboardButton("Iced Americano 🧊", callback_data='iced_americano')],
+        [InlineKeyboardButton("⬅️ Ana Menü", callback_data='menu')]
     ]
     return InlineKeyboardMarkup(keyboard)
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "👋 Selam Şef! Ben senin kişisel Barista asistanınım.\n\n"
-        "Bugün hangi demleme yöntemiyle harikalar yaratmak istersin?",
-        reply_markup=get_main_keyboard()
-    )
+async def start(update, context):
+    await update.message.reply_text("👋 Selam! Ben Barista Koçu.\nBugün ne demlemek istersin?", reply_markup=get_main_menu())
 
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text.lower()
-    if "menü" in text or "geri dön" in text or "ana menü" in text:
-        await update.message.reply_text(
-            "Ana Menüye Dönüldü. Hangi yöntemi seçiyoruz?",
-            reply_markup=get_main_keyboard()
-        )
-
-async def button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def handle_callback(update, context):
     query = update.callback_query
     await query.answer()
     
     if query.data == 'menu':
-        await query.edit_message_text(
-            "Hangi demleme yöntemini seçiyoruz?",
-            reply_markup=get_main_keyboard()
-        )
+        await query.edit_message_text("Hangi demleme yöntemini seçiyoruz?", reply_markup=get_main_menu())
     elif query.data == 'espresso_menu':
-        await query.edit_message_text(
-            RECIPES['espresso_menu'],
-            reply_markup=get_espresso_keyboard(),
-            parse_mode='Markdown'
-        )
+        await query.edit_message_text(RECIPES['espresso_menu'], reply_markup=get_espresso_menu())
     else:
-        recipe_text = RECIPES.get(query.data, "Maalesef tarif bulunamadı.")
+        text = RECIPES.get(query.data, "Tarif bulunamadı.")
         keyboard = [[InlineKeyboardButton("⬅️ Menüye Dön", callback_data='menu')]]
-        await query.edit_message_text(
-            text=recipe_text, 
-            reply_markup=InlineKeyboardMarkup(keyboard), 
-            parse_mode='Markdown'
-        )
+        if query.data in ['espresso', 'americano', 'latte', 'cappuccino', 'flat_white', 'cortado', 'iced_latte', 'iced_americano']:
+            keyboard = [[InlineKeyboardButton("⬅️ Espresso Menüsü", callback_data='espresso_menu')], [InlineKeyboardButton("⬅️ Ana Menü", callback_data='menu')]]
+        await query.edit_message_text(text=text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode='Markdown')
+
+async def handle_text(update, context):
+    text = update.message.text.lower()
+    if any(word in text for word in ["menü", "geri", "dön", "ana"]):
+        await update.message.reply_text("Ana Menü:", reply_markup=get_main_menu())
 
 TOKEN = '8640816185:AAH3vQsZl9TtNF5lFmZQJxHdxlV0-LPCa2w'
-app = ApplicationBuilder().token(TOKEN).build()
-app.add_handler(CommandHandler('start', start))
-app.add_handler(CallbackQueryHandler(button_click))
-app.add_handler(MessageHandler(filters.TEXT & (~filters.COMMAND), handle_message))
+application = ApplicationBuilder().token(TOKEN).build()
+application.add_handler(CommandHandler('start', start))
+application.add_handler(CallbackQueryHandler(handle_callback))
+application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_text))
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
-        self.send_response(200)
-        self.end_headers()
-        content_length = int(self.headers['Content-Length'])
-        post_data = self.rfile.read(content_length)
-        update_json = json.loads(post_data.decode('utf-8'))
+        content_length = int(self.headers.get('Content-Length', 0))
+        body = self.rfile.read(content_length)
+        update_json = json.loads(body.decode('utf-8'))
         
-        async def process_update():
-            update = Update.de_json(update_json, app.bot)
-            await app.initialize()
-            await app.process_update(update)
-            
-        asyncio.run(process_update())
-        return
+        async def process():
+            async with application:
+                update = Update.de_json(update_json, application.bot)
+                await application.process_update(update)
+        
+        try:
+            loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(loop)
+            loop.run_until_complete(process())
+            self.send_response(200)
+            self.end_headers()
+        except Exception as e:
+            logger.error(f"Error: {e}")
+            self.send_response(500)
+            self.end_headers()
 
     def do_GET(self):
         self.send_response(200)
         self.send_header('Content-type', 'text/plain')
         self.end_headers()
-        self.wfile.write("Bot is running!".encode('utf-8'))
-        return
+        self.wfile.write("Barista Koçu is active!".encode())
