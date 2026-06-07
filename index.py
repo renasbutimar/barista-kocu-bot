@@ -15,12 +15,33 @@ RECIPES = {
     'chemex': "🧪 *Chemex Tarifi*\n\n30g kahve, 500ml su (94°C). 60g blooming (45sn), yavaşça merkeze dökerek 500ml'ye tamamla.",
     'aeropress': "🚀 *AeroPress Tarifi*\n\n18g kahve, 200ml su (85-88°C). Ters yöntem: Suyu ekle, 30sn bekle, 1:30'da presle.",
     'espresso_menu': "☕ *Espresso Bazlı Kahveler*\n\nHangi içeceği hazırlıyoruz?",
-    'espresso': "☕ *Espresso*\n\n*   *Kahve:* 18-20g (İnce öğütülmüş)\n*   *Oran:* 1:2 (36-40g çıktı)\n*   *Süre:* 25-30 saniye\n*   *Sıcaklık:* 92-94°C\n\n*Hazırlanışı:*\n1. Sepeti temizle ve kurula.\n2. Kahveyi tart ve homojen dağıt.\n3. Düzgünce tampla.\n4. Grup başlığını temizle (flush).\n5. Portafiltreyi tak ve hemen başlat.",
-    'americano': "🥤 *Americano*\n\nDouble espresso + 150ml sıcak su.",
-    'latte': "🥛 *Latte*\n\n*   *Baz:* Double Espresso (36-40g)\n*   *Süt:* 200-250ml taze süt\n*   *Köpük:* İnce, ipeksi mikro köpük (~1cm)\n*   *Sıcaklık:* 60-65°C\n\n*Hazırlanışı:*\n1. Espressoyu hazırla.\n2. Sütü 2-3 sn havalandırıp (pıtırtı sesi) girdap oluştur.\n3. Sütü dairesel hareketlerle espressoya ekle.\n4. Yüzeyde desen oluşturarak tamamla.",
-    'cappuccino': "☁️ *Cappuccino*\n\n*   *Baz:* Double Espresso (36-40g)\n*   *Süt:* 150ml taze süt\n*   *Köpük:* Yoğun ve kremsi mikro köpük (1.5-2cm)\n*   *Sıcaklık:* 60-65°C\n\n*Hazırlanışı:*\n1. Espressoyu hazırla.\n2. Sütü 5-6 sn havalandırarak yoğun köpük oluştur.\n3. Sütü merkezden dökerek beyaz bir köpük katmanı oluştur.",
-    'flat_white': "🥛 *Flat White*\n\n*   *Baz:* Double Espresso (36-40g)\n*   *Süt:* 120-150ml taze süt\n*   *Köpük:* Çok ince mikro köpük (~0.5cm)\n*   *Sıcaklık:* 60-65°C\n\n*Hazırlanışı:*\n1. Espressoyu hazırla.\n2. Sütü çok kısa süre havalandırıp ipeksi doku ver.\n3. Sütü yavaşça dökerek pürüzsüzce karıştır.",
-    'cortado': "🥃 *Cortado*\n\n*   *Baz:* Double Espresso (36-40g)\n*   *Süt:* 40-60ml taze süt (1:1 oran)\n*   *Köpük:* Çok az mikro köpük\n*   *Sıcaklık:* 55-60°C\n\n*Hazırlanışı:*\n1. Espressoyu hazırla.\n2. Sütü hafifçe ısıt ve çok az havalandır.\n3. Espresso ile sütü eşit miktarda karıştır.",
+    
+    # Core Espresso Variations
+    'espresso': "☕ *Espresso (Standart)*\n\n*Ölçüler:* 18-20g kahve, 36-40g çıktı (1:2 oran).\n*Süre:* 25-30 sn.\n*Adımlar:*\n1. Portafiltreyi temizle ve kurula.\n2. Kahveyi öğüt ve düzle.\n3. Eşit kuvvetle tamp yap.\n4. Grup başlığını akıt, portafiltreyi tak ve hemen başlat.",
+    'ristretto': "☕ *Ristretto*\n\n*Ölçüler:* 18-20g kahve, 20-25g çıktı (1:1.2 oran).\n*Süre:* 15-20 sn.\n*Not:* Daha gövdeli ve tatlı, daha az asidiktir.",
+    'lungo': "☕ *Lungo*\n\n*Ölçüler:* 18-20g kahve, 60-80g çıktı (1:3 veya 1:4 oran).\n*Süre:* 35-45 sn.\n*Not:* Daha acı ve yüksek kafeinlidir.",
+    
+    # Milk Based
+    'macchiato': "☕ *Espresso Macchiato*\n\n*Ölçüler:* Double espresso + 1-2 kaşık yoğun süt köpüğü.\n*Adım:* Espressoyu hazırla, üzerine sadece sütün en yoğun köpüğünden bir dokunuş ekle.",
+    'cortado': "🥃 *Cortado*\n\n*Ölçüler:* Double espresso + 60ml süt (1:1 oran).\n*Süre:* 25-30 sn.\n*Süt:* 55-60°C, az havalandırılmış (ipeksi).",
+    'flat_white': "🥛 *Flat White*\n\n*Ölçüler:* Double espresso + 120-150ml süt.\n*Süt:* 60-65°C, çok ince mikro-köpük (0.5cm).\n*Adım:* Espresso üzerine sütü ince bir akışla, krema ile bütünleşecek şekilde dök.",
+    'cappuccino': "☁️ *Cappuccino*\n\n*Ölçüler:* Double espresso + 150ml süt.\n*Süt:* 60-65°C, yoğun ve kalın köpük (1.5-2cm).\n*Adım:* Sütü merkeze dökerek köpüğün üstte kalmasını sağla.",
+    'latte': "🥛 *Caffè Latte*\n\n*Ölçüler:* Double espresso + 200-250ml süt.\n*Süt:* 60-65°C, ince mikro-köpük (1cm).\n*Adım:* Geniş bir bardağa sütü dökerek krema tabakası oluştur.",
+    'latte_macchiato': "🥛 *Latte Macchiato*\n\n*Ölçüler:* 200ml süt + Double espresso.\n*Adım:*\n1. Sütü köpürtüp bardağa al.\n2. 30 sn bekle (süt ve köpük ayrılsın).\n3. Espressoyu yavaşça sütün ortasından dök (katmanlı görünüm).",
+    
+    # Specialty & Dessert
+    'cafe_mocha': "🍫 *Caffè Mocha*\n\n*Ölçüler:* Double espresso + 20-30ml çikolata sosu + 200ml süt.\n*Adım:*\n1. Çikolatayı espresso ile karıştır.\n2. Üzerine köpürtülmüş sütü ekle.\n3. İsteğe bağlı çırpılmış krema ekle.",
+    'espresso_romano': "🍋 *Espresso Romano*\n\n*Ölçüler:* Single/Double espresso + Limon dilimi/kabuğu.\n*Adım:* Espressoyu hazırla, bardağın kenarına limon sür ve kabuğu içine at.",
+    'affogato': "🍨 *Affogato*\n\n*Ölçüler:* 1 top vanilyalı dondurma + Double espresso.\n*Adım:* Dondurmayı kaseye al, üzerine sıcak espressoyu hemen servis etmeden dök.",
+    'cafe_breve': "🥛 *Caffè Breve*\n\n*Ölçüler:* Double espresso + Half-and-half (yarı süt yarı krema).\n*Adım:* Süt ve krema karışımını latte gibi köpürtüp espresso üzerine ekle.",
+    'vienna_coffee': "🍦 *Vienna Coffee*\n\n*Ölçüler:* Double espresso + Sıcak su (opsiyonel) + Çırpılmış krema.\n*Adım:* Uzun bir kahve hazırlayıp üzerine bolca soğuk çırpılmış krema ekle.",
+    
+    # High Caffeine
+    'americano': "🥤 *Americano*\n\n*Ölçüler:* Double espresso + 150ml sıcak su (90°C).\n*Adım:* Önce suyu bardağa al, üzerine espressoyu ekle (kremayı korumak için).",
+    'red_eye': "👁️ *Red Eye*\n\n*Ölçüler:* 250ml Filtre kahve + Single espresso.\n*Adım:* Demlenmiş filtre kahvenin içine bir shot espresso ekle.",
+    'black_eye': "👁️👁️ *Black Eye*\n\n*Ölçüler:* 250ml Filtre kahve + Double espresso.\n*Adım:* Demlenmiş filtre kahvenin içine double shot espresso ekle.",
+    'dead_eye': "💀 *Dead Eye*\n\n*Ölçüler:* 250ml Filtre kahve + Triple espresso.\n*Adım:* Demlenmiş filtre kahvenin içine üç shot espresso ekle.",
+    
     'iced_latte': "🧊 *Iced Latte*\n\nBuz + 180ml soğuk süt + Double espresso.",
     'iced_americano': "🧊 *Iced Americano*\n\nBuz + 150ml soğuk su + Double espresso."
 }
@@ -36,10 +57,15 @@ def get_main_menu():
 
 def get_espresso_menu():
     keyboard = [
-        [InlineKeyboardButton("Espresso", callback_data='espresso'), InlineKeyboardButton("Americano", callback_data='americano')],
-        [InlineKeyboardButton("Latte", callback_data='latte'), InlineKeyboardButton("Cappuccino", callback_data='cappuccino')],
-        [InlineKeyboardButton("Flat White", callback_data='flat_white'), InlineKeyboardButton("Cortado", callback_data='cortado')],
-        [InlineKeyboardButton("Iced Latte 🧊", callback_data='iced_latte'), InlineKeyboardButton("Iced Americano 🧊", callback_data='iced_americano')],
+        [InlineKeyboardButton("Espresso", callback_data='espresso'), InlineKeyboardButton("Ristretto", callback_data='ristretto')],
+        [InlineKeyboardButton("Lungo", callback_data='lungo'), InlineKeyboardButton("Americano", callback_data='americano')],
+        [InlineKeyboardButton("Macchiato", callback_data='macchiato'), InlineKeyboardButton("Cortado", callback_data='cortado')],
+        [InlineKeyboardButton("Flat White", callback_data='flat_white'), InlineKeyboardButton("Latte", callback_data='latte')],
+        [InlineKeyboardButton("Cappuccino", callback_data='cappuccino'), InlineKeyboardButton("Latte Macchiato", callback_data='latte_macchiato')],
+        [InlineKeyboardButton("Mocha 🍫", callback_data='cafe_mocha'), InlineKeyboardButton("Affogato 🍨", callback_data='affogato')],
+        [InlineKeyboardButton("Breve / Vienna", callback_data='cafe_breve'), InlineKeyboardButton("Romano 🍋", callback_data='espresso_romano')],
+        [InlineKeyboardButton("Red/Black/Dead Eye 👁️", callback_data='red_eye')],
+        [InlineKeyboardButton("Iced Menu 🧊", callback_data='iced_latte')],
         [InlineKeyboardButton("⬅️ Ana Menü", callback_data='menu')]
     ]
     return InlineKeyboardMarkup(keyboard)
@@ -55,10 +81,34 @@ async def handle_callback(update, context):
         await query.edit_message_text("Hangi demleme yöntemini seçiyoruz?", reply_markup=get_main_menu())
     elif query.data == 'espresso_menu':
         await query.edit_message_text(RECIPES['espresso_menu'], reply_markup=get_espresso_menu())
+    elif query.data == 'red_eye':
+         # Sub-menu for X-Eye drinks
+         keyboard = [
+             [InlineKeyboardButton("Red Eye (1 shot)", callback_data='red_eye_recipe')],
+             [InlineKeyboardButton("Black Eye (2 shots)", callback_data='black_eye')],
+             [InlineKeyboardButton("Dead Eye (3 shots)", callback_data='dead_eye')],
+             [InlineKeyboardButton("⬅️ Espresso Menüsü", callback_data='espresso_menu')]
+         ]
+         await query.edit_message_text("Filtre kahve + Espresso sertliği seçin:", reply_markup=InlineKeyboardMarkup(keyboard))
+    elif query.data == 'red_eye_recipe':
+        text = RECIPES['red_eye']
+        keyboard = [[InlineKeyboardButton("⬅️ Geri", callback_data='red_eye')], [InlineKeyboardButton("⬅️ Ana Menü", callback_data='menu')]]
+        await query.edit_message_text(text=text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode='Markdown')
+    elif query.data == 'cafe_breve':
+         keyboard = [
+             [InlineKeyboardButton("Caffè Breve", callback_data='cafe_breve_recipe')],
+             [InlineKeyboardButton("Vienna Coffee", callback_data='vienna_coffee')],
+             [InlineKeyboardButton("⬅️ Espresso Menüsü", callback_data='espresso_menu')]
+         ]
+         await query.edit_message_text("Kremalı tarifler seçin:", reply_markup=InlineKeyboardMarkup(keyboard))
+    elif query.data == 'cafe_breve_recipe':
+        text = RECIPES['cafe_breve']
+        keyboard = [[InlineKeyboardButton("⬅️ Geri", callback_data='cafe_breve')], [InlineKeyboardButton("⬅️ Ana Menü", callback_data='menu')]]
+        await query.edit_message_text(text=text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode='Markdown')
     else:
         text = RECIPES.get(query.data, "Tarif bulunamadı.")
         keyboard = [[InlineKeyboardButton("⬅️ Menüye Dön", callback_data='menu')]]
-        if query.data in ['espresso', 'americano', 'latte', 'cappuccino', 'flat_white', 'cortado', 'iced_latte', 'iced_americano']:
+        if query.data in RECIPES and query.data not in ['v60', 'chemex', 'aeropress', 'espresso_menu']:
             keyboard = [[InlineKeyboardButton("⬅️ Espresso Menüsü", callback_data='espresso_menu')], [InlineKeyboardButton("⬅️ Ana Menü", callback_data='menu')]]
         await query.edit_message_text(text=text, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode='Markdown')
 
