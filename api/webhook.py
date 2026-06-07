@@ -94,6 +94,13 @@ def webhook():
             update = Update.de_json(update_json, telegram_app.bot)
             await telegram_app.process_update(update)
 
-    asyncio.run(process())
+    try:
+        asyncio.run(process())
+    except Exception as e:
+        logger.error(f"Error processing update: {e}")
+        return "Internal Error", 500
     
     return "OK", 200
+
+# Vercel entry point
+application = app
