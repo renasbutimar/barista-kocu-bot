@@ -78,7 +78,7 @@ telegram_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
-def index():
+def home():
     return "Barista Koçu Bot is running! Send POST to /api/webhook"
 
 @app.route('/api/webhook', methods=['POST', 'GET'])
@@ -100,6 +100,6 @@ def webhook():
     
     return "OK", 200
 
-# Entry point for Vercel
-# Vercel's Python runtime will look for an 'app' or 'application' variable in the file.
-# The 'app' variable is already defined above as the Flask instance.
+# Vercel's Python runtime entry point
+def application(environ, start_response):
+    return app(environ, start_response)
