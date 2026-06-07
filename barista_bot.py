@@ -1,16 +1,13 @@
 import logging
-import os
 import json
 import asyncio
 from http.server import BaseHTTPRequestHandler
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ApplicationBuilder, ContextTypes, CommandHandler, CallbackQueryHandler
 
-# Bot loglarını yapılandırıyoruz
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    level=logging.INFO
-)
+# Setup logging
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Kahve tarifleri
 RECIPES = {
@@ -83,33 +80,29 @@ async def button_click(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 TOKEN = '8640816185:AAH3vQsZl9TtNF5lFmZQJxHdxlV0-LPCa2w'
 
-# Application instance must be global to be reused across requests
-application = ApplicationBuilder().token(TOKEN).build()
-application.add_handler(CommandHandler('start', start))
-application.add_handler(CallbackQueryHandler(button_click))
-
-# Initialize application once
-loop = asyncio.new_event_loop()
-asyncio.set_event_loop(loop)
-loop.run_until_complete(application.initialize())
+# Function to handle Vercel serverless request
+async def process_telegram_update(update_json):
+    application = ApplicationBuilder().token(TOKEN).build()
+    application.add_handler(CommandHandler('start', start))
+    application.add_handler(CallbackQueryHandler(button_click))
+    
+    async with application:
+        update = Update.de_json(update_json, application.bot)
+        await application.process_update(update)
 
 class handler(BaseHTTPRequestHandler):
     def do_POST(self):
         try:
-            content_length = int(self.headers.get('Content-Length', 0))
+            content_length = int(self.headers['Content-Length'])
             post_data = self.rfile.read(content_length)
             update_json = json.loads(post_data.decode('utf-8'))
             
-            update = Update.de_json(update_json, application.bot)
-            
-            # Process the update synchronously within the request
-            asyncio.set_event_loop(loop)
-            loop.run_until_complete(application.process_update(update))
+            asyncio.run(process_telegram_update(update_json))
             
             self.send_response(200)
             self.end_headers()
         except Exception as e:
-            logging.error(f"Error processing update: {e}")
+            logger.error(f"Error processing update: {e}")
             self.send_response(500)
             self.end_headers()
 
@@ -117,4 +110,4 @@ class handler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header('Content-type', 'text/plain')
         self.end_headers()
-        self.wfile.write("Barista Koçu Bot is active!".encode('utf-8'))
+        self.wfile.write("Barista Coach Bot is live!".encode('utf-8'))
