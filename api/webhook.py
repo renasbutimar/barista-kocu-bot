@@ -15,12 +15,12 @@ RECIPES = {
     'chemex': "🧪 *Chemex Tarifi*\n\n30g kahve, 500ml su (94°C). 60g blooming (45sn), yavaşça merkeze dökerek 500ml'ye tamamla.",
     'aeropress': "🚀 *AeroPress Tarifi*\n\n18g kahve, 200ml su (85-88°C). Ters yöntem: Suyu ekle, 30sn bekle, 1:30'da presle.",
     'espresso_menu': "☕ *Espresso Bazlı Kahveler*\n\nHangi içeceği hazırlıyoruz?",
-    'espresso': "☕ *Espresso*\n\n18-20g kahve, 36-40g çıktı. 25-30 saniye süre.",
+    'espresso': "☕ *Espresso*\n\n*   *Kahve:* 18-20g (İnce öğütülmüş)\n*   *Oran:* 1:2 (36-40g çıktı)\n*   *Süre:* 25-30 saniye\n*   *Sıcaklık:* 92-94°C\n\n*Hazırlanışı:*\n1. Sepeti temizle ve kurula.\n2. Kahveyi tart ve homojen dağıt.\n3. Düzgünce tampla.\n4. Grup başlığını temizle (flush).\n5. Portafiltreyi tak ve hemen başlat.",
     'americano': "🥤 *Americano*\n\nDouble espresso + 150ml sıcak su.",
-    'latte': "🥛 *Latte*\n\nDouble espresso + 200ml ipeksi süt köpüğü.",
-    'cappuccino': "☁️ *Cappuccino*\n\nDouble espresso + 150ml yoğun süt köpüğü.",
-    'flat_white': "🥛 *Flat White*\n\nDouble espresso + 120ml çok ince süt köpüğü.",
-    'cortado': "🥃 *Cortado*\n\nDouble espresso + 60ml süt (1:1 oran).",
+    'latte': "🥛 *Latte*\n\n*   *Baz:* Double Espresso (36-40g)\n*   *Süt:* 200-250ml taze süt\n*   *Köpük:* İnce, ipeksi mikro köpük (~1cm)\n*   *Sıcaklık:* 60-65°C\n\n*Hazırlanışı:*\n1. Espressoyu hazırla.\n2. Sütü 2-3 sn havalandırıp (pıtırtı sesi) girdap oluştur.\n3. Sütü dairesel hareketlerle espressoya ekle.\n4. Yüzeyde desen oluşturarak tamamla.",
+    'cappuccino': "☁️ *Cappuccino*\n\n*   *Baz:* Double Espresso (36-40g)\n*   *Süt:* 150ml taze süt\n*   *Köpük:* Yoğun ve kremsi mikro köpük (1.5-2cm)\n*   *Sıcaklık:* 60-65°C\n\n*Hazırlanışı:*\n1. Espressoyu hazırla.\n2. Sütü 5-6 sn havalandırarak yoğun köpük oluştur.\n3. Sütü merkezden dökerek beyaz bir köpük katmanı oluştur.",
+    'flat_white': "🥛 *Flat White*\n\n*   *Baz:* Double Espresso (36-40g)\n*   *Süt:* 120-150ml taze süt\n*   *Köpük:* Çok ince mikro köpük (~0.5cm)\n*   *Sıcaklık:* 60-65°C\n\n*Hazırlanışı:*\n1. Espressoyu hazırla.\n2. Sütü çok kısa süre havalandırıp ipeksi doku ver.\n3. Sütü yavaşça dökerek pürüzsüzce karıştır.",
+    'cortado': "🥃 *Cortado*\n\n*   *Baz:* Double Espresso (36-40g)\n*   *Süt:* 40-60ml taze süt (1:1 oran)\n*   *Köpük:* Çok az mikro köpük\n*   *Sıcaklık:* 55-60°C\n\n*Hazırlanışı:*\n1. Espressoyu hazırla.\n2. Sütü hafifçe ısıt ve çok az havalandır.\n3. Espresso ile sütü eşit miktarda karıştır.",
     'iced_latte': "🧊 *Iced Latte*\n\nBuz + 180ml soğuk süt + Double espresso.",
     'iced_americano': "🧊 *Iced Americano*\n\nBuz + 150ml soğuk su + Double espresso."
 }
